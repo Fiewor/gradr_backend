@@ -1,7 +1,10 @@
 const express = require("express");
-// const { connectToMongoDB } = require("./config/db");
-const path = require("path")
+// const path = require("path")
+const { connectToMongoDB } = require("./config/db");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const uploadRouter = require("./routes/upload.route");
+const userRouter = require("./routes/user.route");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -15,10 +18,14 @@ process.on("uncaughtException", (err) => {
 });
 
 const app = express();
-// connectToMongoDB();
+connectToMongoDB();
 
 app.use(express.json());
-app.use("/upload", uploadRouter);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+app.use("/api/user", userRouter);
+app.use("/api/upload", uploadRouter);
 
 app.get("/", (_, res) => {
   res.status(200).send("Hey there!");
