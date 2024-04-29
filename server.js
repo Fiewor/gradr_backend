@@ -1,6 +1,7 @@
 const express = require("express");
-const { connectToMongoDB } = require("./config/db");
-const appRoutes = require("./routes/appRoutes")
+// const { connectToMongoDB } = require("./config/db");
+const path = require("path")
+const uploadRouter = require("./routes/upload.route");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -14,13 +15,16 @@ process.on("uncaughtException", (err) => {
 });
 
 const app = express();
-connectToMongoDB();
+// connectToMongoDB();
 
 app.use(express.json());
-app.use(appRoutes);
+app.use("/upload", uploadRouter);
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "views")));
 
 app.get("/", (_, res) => {
-  res.status(200).send("Hey there!");
+  // res.status(200).send("Hey there!");
+  res.sendFile(path.join("index.html"));
 });
 
 app.get("*", (_, res) => {
