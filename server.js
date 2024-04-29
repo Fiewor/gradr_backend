@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const uploadRouter = require("./routes/upload.route");
 const userRouter = require("./routes/user.route");
+const gradeRouter = require("./routes/grade.route");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use(cookieParser());
 
 app.use("/api/user", userRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/grade", gradeRouter);
 
 app.get("/", (_, res) => {
   res.status(200).send("Hey there!");
