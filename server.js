@@ -19,12 +19,9 @@ const app = express();
 
 app.use(express.json());
 app.use("/upload", uploadRouter);
-app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "views")));
 
 app.get("/", (_, res) => {
-  // res.status(200).send("Hey there!");
-  res.sendFile(path.join("index.html"));
+  res.status(200).send("Hey there!");
 });
 
 app.get("*", (_, res) => {
