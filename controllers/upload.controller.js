@@ -2,7 +2,6 @@ const Uploader = require("../services/upload2Cloud");
 const { grade } = require("./grade.controller");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
-const answersFolder = "C:/Users/DELL/Downloads/answer_sheets";
 
 // Upload single file
 exports.uploadAndGrade = async (req, res) => {
