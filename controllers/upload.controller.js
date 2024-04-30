@@ -1,5 +1,5 @@
 const Uploader = require("../services/upload2Cloud");
-const { grade } = require("./grade.controller");
+const { grade } = require("../services/grade");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 
@@ -14,11 +14,11 @@ exports.uploadAndGrade = async (req, res) => {
     let urls = new Map();
 
     const files = Object.values(req.files); // Convert to array
+
     await Promise.all(
       files.map(async (element) => {
         const filePath = element[0].path;
         const filename = element[0].fieldname;
-        console.log("filePath", filePath);
         const url = await Uploader.googleCloudUploader(
           bucketName,
           filePath,
@@ -30,20 +30,21 @@ exports.uploadAndGrade = async (req, res) => {
 
     const questionUrl = urls.get("file1");
     const guideUrl = urls.get("file2");
+    const studentAnswersUrl = "C:/Users/JFiewor/Downloads/gradr/answer_sheets";
 
-    //Issue here
-    console.log(questionUrl);
-    const result = await grade(questionUrl, guideUrl);
+    const result = await grade(questionUrl, guideUrl, studentAnswersUrl);
 
-    console.log(result);
+    console.log("result: ", result);
     res
       .status(200)
-      .json({ message: "File uploaded to Google Cloud Storage successfully." });
+      .json({
+        message: "File uploaded to Google Cloud Storage successfully.",
+        result,
+      });
   } catch (error) {
-    console.error("Error uploading file to Google Cloud Storage:", error);
+    console.error("Error:", error);
     res.status(500).json({
-      error:
-        "An error occurred while uploading the file to Google Cloud Storage.",
+      error: "An error occurred.",
     });
   }
 };
