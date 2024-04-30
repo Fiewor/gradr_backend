@@ -5,8 +5,8 @@ const fileToGenerativePart = require("../services/fileToGenerativePart");
 
 const WordExtractor = require("word-extractor");
 
-async function grade(req, res) {
-  const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+async function grade(questionUrl, guideUrl) {
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
   const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
   const textModel = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -15,12 +15,14 @@ async function grade(req, res) {
   };
 
   // for answer sheets
-  const answersFolder = "C:/Users/JFiewor/Downloads/gradr/answer_sheets";
+  const answersFolder = "C:/Users/DELL/Downloads/answer_sheets";
 
-  const questionPath =
-    "C:/Users/JFiewor/Downloads/gradr/lecturer_upload/question.docx";
-  const guidePath =
-    "C:/Users/JFiewor/Downloads/gradr/lecturer_upload/guide.docx";
+  const questionPath = questionUrl;
+  // const questionPath =
+  //   "C:/Users/DELL/Downloads/question.docx";
+  const guidePath = guideUrl;
+  // const guidePath =
+  //   "C:/Users/DELL/Downloads/guide.docx";
 
   const extractor = new WordExtractor();
   const questionData = await extractor.extract(questionPath);
@@ -62,23 +64,22 @@ async function grade(req, res) {
 
   if (question && guide && studentAnswer) {
     const gradingPrompt = `You are a university lecturer who is grading a student's answers to a question: ${question}.
-  You have a marking guide ${guide} that instructs you on how to allocate marks, and the sum of each major bullet points gives you the total number of marks to be allocated.
-  Here is the student's answer to the question: ${studentAnswer}.
-  Assess the student's answer based on the guide instructions here: ${guide} and the online answers here: ${onlineAnswers} and give the student a grade.
-  Also provide feedback on the student's performance noting areas for improvement. Start this feedback on a new line with the sentence 'Here is some feedback: '`;
+    You have a marking guide ${guide} that instructs you on how to allocate marks, and the sum of each major bullet points gives you the total number of marks to be allocated.
+    Here is the student's answer to the question: ${studentAnswer}.
+    Assess the student's answer based on the guide instructions here: ${guide} and the online answers here: ${onlineAnswers} and give the student a grade.
+    Also provide feedback on the student's performance noting areas for improvement. Start this feedback on a new line with the sentence 'Here is some feedback: '`;
 
     const result = await textModel.generateContent(gradingPrompt);
     const response = result.response;
     console.log("output of grading: ", response.text());
 
-    res.status(200).send({
-      success: true,
-      data: {
-        question: question,
-        markingGuide: guide,
-        gradingReponse: response.text(),
-      },
-    });
+    const data = {
+      question: question,
+      markingGuide: guide,
+      gradingReponse: response.text(),
+    };
+
+    return data;
   } else {
     console.log("One or more parameters are falsy");
   }
