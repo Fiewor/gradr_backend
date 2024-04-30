@@ -10,12 +10,16 @@ const storage = multer.diskStorage({
   },
 });
 
-// Initialize multer middleware with the defined storage settings
-const upload = multer({ storage: storage }).single("file");
+const upload = multer({ storage: storage });
+const uploadMultiple = upload.fields([
+  { name: "file1", maxCount: 1 },
+  { name: "file2", maxCount: 1 },
+  // { name: "file3", maxCount: 1 },
+])
 
 // Middleware to handle file upload
 exports.handleUpload = (req, res, next) => {
-  upload(req, res, function (err) {
+  uploadMultiple(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading
       return res.status(500).json({ error: err.message });
@@ -25,7 +29,8 @@ exports.handleUpload = (req, res, next) => {
         .status(500)
         .json({ error: "An error occurred while uploading the file." });
     }
+
     // No errors, proceed to the next middleware or route handler
     next();
-  });
+  })
 };
