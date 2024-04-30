@@ -4,7 +4,7 @@ const getOnlineAnswers = require("./getOnlineAnswers");
 const downloadFilesToLocal = require("./downloadFilesToLocal");
 const readFolderContent = require("./readFolderContent");
 
-async function grade(questionUrl, guideUrl, answersFolder) {
+async function grade(questionUrl, guideUrl, answersFolder, marksAttainable) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
   const textModel = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -46,7 +46,7 @@ async function grade(questionUrl, guideUrl, answersFolder) {
     studentAnswers.map(async (answer) => {
       if (question && guide && onlineAnswers) {
         const gradingPrompt = `You are a university lecturer who is grading a student's answers to a question: ${question}.
-      You have a marking guide ${guide} that instructs you on how to allocate marks, and the sum of each major bullet points gives you the total number of marks to be allocated.
+      You have a marking guide ${guide} that instructs you on how to allocate marks. Note that the maximum attainable mark is ${marksAttainable}.
       Here is the student's answer to the question: ${answer}.
       Assess the student's answer based on the guide instructions here: ${guide} and the online answers here: ${onlineAnswers} and give the student a grade.
       Also provide feedback on the student's performance noting areas for improvement. Start this feedback on a new line with the sentence 'Here is some feedback: '`;
