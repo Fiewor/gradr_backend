@@ -1,11 +1,10 @@
 const express = require("express");
-const path = require("path")
+const path = require("path");
 const { connectToMongoDB } = require("./config/db");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const uploadRouter = require("./routes/upload.route");
 const userRouter = require("./routes/user.route");
-const gradeRouter = require("./routes/grade.route");
 const paymentRouter = require("./routes/payment.route");
 require("dotenv").config();
 
@@ -20,7 +19,7 @@ process.on("uncaughtException", (err) => {
 });
 
 const app = express();
-connectToMongoDB();
+// connectToMongoDB();
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,11 +27,10 @@ app.use(cookieParser());
 
 app.use("/api/user", userRouter);
 app.use("/api/upload", uploadRouter);
-app.use("/api/grade", gradeRouter);
 app.use("/api/payment", paymentRouter);
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"))
+  res.sendFile(path.join(__dirname, "views", "index.html"));
   // res.status(200).send("Hey there!");
 });
 
