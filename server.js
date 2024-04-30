@@ -1,11 +1,12 @@
 const express = require("express");
-// const path = require("path")
+const path = require("path")
 const { connectToMongoDB } = require("./config/db");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const uploadRouter = require("./routes/upload.route");
 const userRouter = require("./routes/user.route");
 const gradeRouter = require("./routes/grade.route");
+const paymentRouter = require("./routes/payment.route");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 3000;
@@ -28,9 +29,11 @@ app.use(cookieParser());
 app.use("/api/user", userRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/grade", gradeRouter);
+app.use("/api/payment", paymentRouter);
 
 app.get("/", (_, res) => {
-  res.status(200).send("Hey there!");
+  res.sendFile(path.join(__dirname, "views", "index.html"))
+  // res.status(200).send("Hey there!");
 });
 
 app.get("*", (_, res) => {
@@ -43,6 +46,7 @@ app.listen(PORT, () => {
 
 // unhandled promise rejection
 process.on("unhandledRejection", (err) => {
+  console.log(err);
   console.log(`Shutting down the server for ${err.message}`);
   console.log(`shutting down the server for unhandle promise rejection`);
 
