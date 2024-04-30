@@ -7,7 +7,7 @@ const uploadMiddleware = require("../middlewares/upload.middleware");
 uploadRouter.post(
   "/file",
   uploadMiddleware.handleUpload,
-  uploadController.upload
+  uploadController.uploadAndGrade
 );
 
 module.exports = uploadRouter;
