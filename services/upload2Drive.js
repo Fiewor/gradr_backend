@@ -50,3 +50,35 @@ async function googleDriveUploader(authClient) {
 }
 
 // authorize().then(googleDriveUploader).catch("error", console.error()); // function call
+
+
+async function downloadFolder(folderId, destination) {
+  const drive = google.drive({ version: 'v3', auth });
+  const files = await drive.files.list({
+    pageSize: 100, // adjust page size as needed
+    q: `mimeType = 'application/vnd.google-apps.folder' and '${folderId}' in parents`,
+  });
+
+  for (const file of files.data.files) {
+    if (file.mimeType === 'application/vnd.google-apps.folder') {
+      // Recursively download subfolders
+      await downloadFolder(file.id, `${destination}/${file.name}`);
+    } else {
+      // Download individual files
+      await downloadFile(drive, file.id, `${destination}/${file.name}`);
+    }
+  }
+}
+
+async function downloadFile(drive, fileId, destinationPath) {
+  const dest = fs.createWriteStream(destinationPath);
+  await drive.files.get({ fileId, alt: 'media' }, { responseType: 'stream' })
+    .then((res) => res.data.pipe(dest))
+    .catch((err) => console.error('Error downloading file:', err));
+  console.log(`Downloaded: ${destinationPath}`);
+}
+
+
+(async () => {
+  await downloadFolder("1-W7XtLNU3BNrdCZW70dPfhQ79taXfuV2", )
+})()
