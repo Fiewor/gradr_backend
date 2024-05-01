@@ -38,7 +38,7 @@ async function grade(questionUrl, guideUrl, answersFolder, marksAttainable) {
   const onlineAnswers = await getOnlineAnswers(question);
   const studentAnswers = await readFolderContent(answersFolder);
 
-  if (!studentAnswers?.length) {
+  if (studentAnswers.error || !studentAnswers?.length) {
     return { status: "error", message: "No student answer to grade." };
   }
 
@@ -62,7 +62,7 @@ async function grade(questionUrl, guideUrl, answersFolder, marksAttainable) {
   );
 
   const data = {
-    question: question,
+    question,
     markingGuide: guide,
     gradingReponse: responses,
   };

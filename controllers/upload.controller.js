@@ -37,7 +37,8 @@ exports.uploadAndGrade = async (req, res) => {
 
     console.log("result: ", result);
     res.status(200).json({
-      message: "File uploaded to Google Cloud Storage successfully.",
+      status: "success",
+      message: "Grading successful.",
       result,
     });
   } catch (error) {
