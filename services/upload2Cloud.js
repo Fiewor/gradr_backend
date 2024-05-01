@@ -20,7 +20,7 @@ exports.googleCloudUploader = async (bucketName, file, fileOutputName) => {
     // Get the authenticated URL for the uploaded file
     const [url] = await fileUpload.getSignedUrl({
       action: "read",
-      expires: Date.now() + 60 * 60 * 1000, // URL expires in 1 hour
+      expires: Date.now() + 24 * 60 * 60 * 1000, // URL expires in 1 hour
     });
 
     return url;
