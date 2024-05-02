@@ -1,7 +1,9 @@
 const express = require("express");
 const path = require("path");
-const { connectToMongoDB } = require("./config/db");
 const bodyParser = require("body-parser");
+const cors = require("cors");
+
+const { connectToMongoDB } = require("./config/db");
 const cookieParser = require("cookie-parser");
 const uploadRouter = require("./routes/upload.route");
 const userRouter = require("./routes/user.route");
@@ -24,6 +26,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 app.use("/api/user", userRouter);
 app.use("/api/upload", uploadRouter);
