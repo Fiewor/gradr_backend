@@ -18,7 +18,7 @@ async function readFolderContent(folder) {
       .readdirSync(folder, options, (err, files) => files)
       .map((files) => {
         const filePath = path.join(folder, files);
-        return fileToGenerativePart(filePath, "image/jpeg");
+        return fileToGenerativePart(filePath, "image", "image/jpeg");
       });
 
     const prompt = "What is the text contained in this image?";
