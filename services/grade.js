@@ -3,7 +3,7 @@ const WordExtractor = require("word-extractor");
 const getOnlineAnswers = require("./getOnlineAnswers");
 const downloadFilesToLocal = require("./downloadFilesToLocal");
 const readFolderContent = require("./readFolderContent");
-const { formulateGradingPrompt } = require("./formulatePrompt");
+const { formulateGradingPrompt } = require("./formulateGradingPrompt");
 
 async function grade(
   questionUrl,
@@ -54,6 +54,7 @@ async function grade(
     studentAnswers.map(async (answer) => {
       if (question && guide && onlineAnswers) {
         const gradingPrompt = formulateGradingPrompt(
+          question,
           guide,
           answer,
           onlineAnswers,
