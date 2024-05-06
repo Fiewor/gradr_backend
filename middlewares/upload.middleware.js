@@ -27,7 +27,7 @@ exports.handleUpload = (req, res, next) => {
       // An unknown error occurred when uploading
       return res
         .status(500)
-        .json({ error: "An error occurred while uploading the file." });
+        .json({ err, error: "An error occurred while uploading the file." });
     }
 
     // No errors, proceed to the next middleware or route handler
