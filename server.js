@@ -1,5 +1,5 @@
 const express = require("express");
-const path = require("path");
+// const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -37,8 +37,8 @@ app.use("/api/upload", uploadRouter);
 app.use("/api/payment", paymentRouter);
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"));
-  // res.status(200).send("Hey there!");
+  // res.sendFile(path.join(__dirname, "views", "index.html"));
+  res.status(200).send("Hey there!");
 });
 
 app.get("*", (_, res) => {
