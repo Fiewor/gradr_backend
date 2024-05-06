@@ -19,12 +19,22 @@ async function grade(
   let questionPath = "",
     guidePath = "";
 
-  const fetchQuestion = await downloadFilesToLocal(questionUrl, "question");
+  const fetchQuestion = await downloadFilesToLocal(
+    questionUrl,
+    "files",
+    "question.docx",
+    "document"
+  );
   if (fetchQuestion?.status === "success") {
     questionPath = fetchQuestion?.path;
   }
 
-  const fetchGuide = await downloadFilesToLocal(guideUrl, "guide");
+  const fetchGuide = await downloadFilesToLocal(
+    guideUrl,
+    "files",
+    "guide.docx",
+    "document"
+  );
   if (fetchGuide?.status === "success") {
     guidePath = fetchGuide?.path;
   }
@@ -46,7 +56,7 @@ async function grade(
   const onlineAnswers = await getOnlineAnswers(question);
   const studentAnswers = await readFolderContent(answersFolder);
 
-  if (studentAnswers.error || !studentAnswers?.length) {
+  if (studentAnswers?.error || !studentAnswers?.length) {
     return { status: "error", message: "No student answer to grade." };
   }
 

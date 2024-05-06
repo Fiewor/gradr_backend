@@ -2,11 +2,12 @@ const Uploader = require("../services/upload2Cloud");
 const { grade } = require("../services/grade");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
+const folderName = process.env.FOLDER_NAME || "Students_Answer_sheets";
 
 // Upload single file
 exports.uploadAndGrade = async (req, res) => {
   try {
-    const { marks } = req.body;
+    const { marks, dependencyLevel, extraPrompt } = req.body;
     // Check if a file was uploaded
     if (!req.files) {
       return res.status(400).json({ error: "No file uploaded." });
@@ -16,7 +17,7 @@ exports.uploadAndGrade = async (req, res) => {
 
     const files = Object.values(req.files); // Convert to array
 
-    await Promise.all(
+    const re = await Promise.all(
       files.map(async (element) => {
         const filePath = element[0].path;
         const filename = element[0].fieldname;
@@ -26,25 +27,44 @@ exports.uploadAndGrade = async (req, res) => {
           `testupload-${filename + Date.now()}.txt`
         );
         urls.set(filename, url);
+        return { filename, url };
       })
     );
 
+    console.log("call to cloudUploader: ", re);
+
     const questionUrl = urls.get("file1");
     const guideUrl = urls.get("file2");
-    const studentAnswersUrl = "C:/Users/JFiewor/Downloads/gradr/answer_sheets";
 
-    const result = await grade(questionUrl, guideUrl, studentAnswersUrl, marks);
+    if (questionUrl && guideUrl) {
+      const studentAnswersUrl = `https://storage.googleapis.com/${bucketName}/${folderName}/`;
+      console.log("studentAnswersUrl: ", studentAnswersUrl);
 
-    console.log("result: ", result);
-    res.status(200).json({
-      status: "success",
-      message: "Grading successful.",
-      result,
-    });
+      const result = await grade(
+        questionUrl,
+        guideUrl,
+        studentAnswersUrl,
+        marks,
+        dependencyLevel,
+        extraPrompt
+      );
+
+      if (result?.status === "success") {
+        const { data } = result;
+        res.status(200).json({
+          status: "success",
+          message: "Grading successful.",
+          data,
+        });
+      }
+    } else {
+      console.log("questionUrl: ", questionUrl);
+      console.log("guideUrl: ", guideUrl);
+      res.status(500).json({
+        error: "Unable to get urls",
+      });
+    }
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({
-      error: "An error occurred.",
-    });
   }
 };
