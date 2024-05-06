@@ -2,15 +2,11 @@ const Uploader = require("../services/upload2Cloud");
 const { grade } = require("../services/grade");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
-const folderName = process.env.FOLDER_NAME || "Students_Answer_sheets";
-const studentAnswersUrl = `https://storage.googleapis.com/${bucketName}/${folderName}/`;
-console.log("studentAnswersUrl: ", studentAnswersUrl);
 
-// Upload single file
 exports.uploadAndGrade = async (req, res) => {
   try {
     const { marks, dependencyLevel, extraPrompt } = req.body;
-    // Check if a file was uploaded
+    // Check if files were uploaded
     if (!req.files) {
       return res.status(400).json({ error: "No file uploaded." });
     }
@@ -19,7 +15,7 @@ exports.uploadAndGrade = async (req, res) => {
 
     const files = Object.values(req.files); // Convert to array
 
-    const re = await Promise.all(
+    await Promise.all(
       files.map(async (element) => {
         const filePath = element[0].path;
         const filename = element[0].fieldname;
@@ -40,7 +36,6 @@ exports.uploadAndGrade = async (req, res) => {
       const result = await grade(
         questionUrl,
         guideUrl,
-        studentAnswersUrl,
         marks,
         dependencyLevel,
         extraPrompt

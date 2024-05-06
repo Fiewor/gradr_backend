@@ -6,14 +6,13 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fileToGenerativePart = require("./fileToGenerativePart");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
 const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-const downloadFilesToLocal = require("./downloadFilesToLocal");
 const getFilesInFolder = require("./getFilesInFolder");
 const downloadFromCloudStorage = require("./downloadFromCloudStorage");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 const folderName = process.env.FOLDER_NAME || "Students_Answer_sheets";
 
-async function readFolderContent(folder) {
+async function readFolderContent() {
   const answerFolder = path.join(__dirname, "../answers");
 
   const filesInFolder = await getFilesInFolder(bucketName, folderName);

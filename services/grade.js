@@ -8,7 +8,6 @@ const { formulateGradingPrompt } = require("./formulateGradingPrompt");
 async function grade(
   questionUrl,
   guideUrl,
-  answersFolder,
   marksAttainable = 0,
   dependencyLevel = 0,
   extraPrompt = ""
@@ -54,7 +53,7 @@ async function grade(
   }
 
   const onlineAnswers = await getOnlineAnswers(question);
-  const studentAnswers = await readFolderContent(answersFolder);
+  const studentAnswers = await readFolderContent();
 
   if (studentAnswers?.error || !studentAnswers?.length) {
     return { status: "error", message: "No student answer to grade." };
