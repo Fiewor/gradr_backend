@@ -53,6 +53,10 @@ exports.uploadAndGrade = async (req, res) => {
           message: "Grading successful.",
           data,
         });
+      } else {
+        res.status(500).json({
+          error: "An error occurred.",
+        });
       }
     } else {
       console.log("questionUrl: ", questionUrl);
