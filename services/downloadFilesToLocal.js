@@ -1,30 +1,36 @@
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const Axios = require("axios");
+// const Axios = require("axios");
+const download = require("download");
 
 const downloadFilesToLocal = async (url, location, localFileName, type) => {
   const dir = path.join(__dirname, `../${location}`);
   const filePath = `${dir}/${localFileName}`;
 
-  const response = await Axios({
-    url,
-    method: "GET",
-    responseType: "stream",
-  });
+  fs.writeFileSync(filePath, await download(url));
 
-  return new Promise((resolve, reject) => {
-    response.data
-      .pipe(fs.createWriteStream(filePath))
-      .on("error", reject({ status: "error", message: e?.message }))
-      .once("close", () =>
-        resolve({
-          status: "success",
-          message: "Download successful.",
-          path: `${dir}/${localFileName}`,
-        })
-      );
-  });
+  //! Axios implementation
+  // const response = await Axios({
+  //   url,
+  //   method: "GET",
+  //   responseType: "stream",
+  // });
+  // return new Promise((resolve, reject) => {
+  //   response.data
+  //     .pipe(fs.createWriteStream(filePath))
+  //     .on("error", (e) => {
+  //       console.log("error(download): ", e);
+  //       reject({ status: "error", message: e?.message });
+  //     })
+  //     .once("close", () =>
+  //       resolve({
+  //         status: "success",
+  //         message: "Download successful.",
+  //         path: `${dir}/${localFileName}`,
+  //       })
+  //     );
+  // });
 
   //!second download implementation
   // https

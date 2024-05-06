@@ -3,6 +3,8 @@ const { grade } = require("../services/grade");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 const folderName = process.env.FOLDER_NAME || "Students_Answer_sheets";
+const studentAnswersUrl = `https://storage.googleapis.com/${bucketName}/${folderName}/`;
+console.log("studentAnswersUrl: ", studentAnswersUrl);
 
 // Upload single file
 exports.uploadAndGrade = async (req, res) => {
@@ -31,15 +33,10 @@ exports.uploadAndGrade = async (req, res) => {
       })
     );
 
-    console.log("call to cloudUploader: ", re);
-
     const questionUrl = urls.get("file1");
     const guideUrl = urls.get("file2");
 
     if (questionUrl && guideUrl) {
-      const studentAnswersUrl = `https://storage.googleapis.com/${bucketName}/${folderName}/`;
-      console.log("studentAnswersUrl: ", studentAnswersUrl);
-
       const result = await grade(
         questionUrl,
         guideUrl,

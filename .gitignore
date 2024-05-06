@@ -1,5 +1,6 @@
 node_modules
 apikeys.json
+gradrkeys.json
 cloudkeys.json
 .env
 views

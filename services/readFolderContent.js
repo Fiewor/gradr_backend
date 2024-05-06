@@ -7,6 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
 const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 const downloadFilesToLocal = require("./downloadFilesToLocal");
 const getFilesInFolder = require("./getFilesInFolder");
+const downloadFromCloudStorage = require("./downloadFromCloudStorage");
 
 const options = {
   // withFileTypes: true,
@@ -23,10 +24,15 @@ async function readFolderContent(folder) {
   if (filesInFolder?.length) {
     // {FOLDER_NAME}/student_answer_2.jpg
     filesInFolder?.map(({ url, signedUrl, fileName }) => {
+      console.log("fileName: ", fileName);
       // const uri = `gs://${bucketName}/${fileName}`;
       const strippedName = fileName.split("/").at(-1);
-      console.log("strippedName: ", strippedName);
-      downloadFilesToLocal(url, "answers", strippedName, "image");
+      // console.log("strippedName: ", strippedName);
+      const location = "answers";
+      const dir = path.join(__dirname, `../${location}`);
+      const filePath = `${dir}/${strippedName}`;
+
+      downloadFromCloudStorage(bucketName, fileName, filePath);
     });
 
     const data = fs

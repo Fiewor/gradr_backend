@@ -26,9 +26,11 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors({
-  origin: '*'
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use("/api/user", userRouter);
 app.use("/api/upload", uploadRouter);
@@ -53,7 +55,7 @@ process.on("unhandledRejection", (err) => {
   console.log(`Shutting down the server for ${err.message}`);
   console.log(`shutting down the server for unhandle promise rejection`);
 
-  server.close(() => {
-    process.exit(1);
-  });
+  // server.close(() => {
+  process.exit(1);
+  // });
 });
