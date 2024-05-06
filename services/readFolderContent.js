@@ -29,7 +29,18 @@ async function readFolderContent() {
     });
   }
 
-  const files = await readdir(answerFolder);
+  let files = [];
+
+  try {
+    files = await readdir(answerFolder);
+  } catch (error) {
+    console.error(error);
+  }
+
+  if (!files?.length) {
+    return { error: true, message: "No files" };
+  }
+
   const data = files
     .filter((files) => files !== ".gitkeep")
     .map((files) => {
