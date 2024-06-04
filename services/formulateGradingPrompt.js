@@ -24,12 +24,30 @@ function formulateGradingPrompt(
       break;
   }
 
-  const prompt = `You are a university lecturer who is grading a student's answers to a question: ${question}.
-          You have a marking guide ${guide} that instructs you on how to allocate marks. Note that the maximum attainable mark is ${marksAttainable}.
-          Here is the student's answer to the question: ${answer}.
+  const prompt = `You are a university lecturer.
+          Your task it to score a student's answers: ${answer} to a question: ${question} out of the maximum attainable marks: ${marksAttainable}.
+          You have a marking guide ${guide} that instructs you on how to allocate marks. 
+
           ${dynamicPortion}
           ${extraPrompt && `Take note of this: ${extraPrompt}`}
-          Also provide feedback on the student's performance noting areas for improvement. Start this feedback on a new line with the sentence 'Here is some feedback: '`;
+          Provide feedback on the student's performance noting areas for improvement.
+
+          Explain your reasoning step-by-step in the "explanation" part of the response. Feel free to reference the marking guide but do not include/repeat it in the response.
+          Format your response in JSON like show below:
+          {
+            \"score\": "{total score} / {marksAttainable}",
+            \"explanation\": \"\",
+            \"feedback\": \"\",
+          }
+          Do not inlude '\n' (new line character), '*'(asterisk) or any such special character in the response. 
+
+          Here is an example response:
+          {
+            "score": "17/20",
+            "explanation": "The student nailed all the points as specified in the marking guide.",
+            "feedback": "There is room for improvement"
+          }
+          `;
 
   return prompt;
 }

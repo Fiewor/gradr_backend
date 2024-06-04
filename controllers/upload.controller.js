@@ -6,6 +6,10 @@ const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 exports.uploadAndGrade = async (req, res) => {
   try {
     const { marks, dependencyLevel, extraPrompt } = req.body;
+
+    console.log("marks: ", marks);
+    console.log("dependencyLevel: ", dependencyLevel);
+    console.log("extraPrompt: ", extraPrompt);
     // Check if files were uploaded
     if (!req.files) {
       return res.status(400).json({ error: "No file uploaded." });
