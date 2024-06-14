@@ -86,6 +86,7 @@ async function grade(
     question,
     markingGuide: guide,
     gradingReponse: responses,
+    onlineAnswers: onlineAnswers,
   };
 
   return { status: "success", data };
