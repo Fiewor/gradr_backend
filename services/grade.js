@@ -53,25 +53,28 @@ async function grade(
   }
 
   const onlineAnswers = await getOnlineAnswers(question);
-  const studentAnswers = await readFolderContent();
+  const folderContent = await readFolderContent();
 
-  if (studentAnswers?.error || !studentAnswers?.length) {
+  if (folderContent?.error || !folderContent?.length) {
     return { status: "error", message: "No student answer to grade." };
   }
 
   const responses = await Promise.allSettled(
-    studentAnswers.map(async (answer) => {
+    // go through all the student's answers
+    folderContent.map(async ({ text: studentAnswer }) => {
       if (question && guide && onlineAnswers) {
+        // generate prompt
         const gradingPrompt = formulateGradingPrompt(
           question,
           guide,
-          answer,
+          studentAnswer,
           onlineAnswers,
           marksAttainable,
           dependencyLevel,
           extraPrompt
         );
 
+        // grade
         const result = await textModel.generateContent(gradingPrompt);
         const response = result.response;
         console.log("output of grading: ", response.text());
@@ -85,8 +88,9 @@ async function grade(
   const data = {
     question,
     markingGuide: guide,
-    gradingReponse: responses,
+    gradingResponse: responses,
     onlineAnswers: onlineAnswers,
+    answerFilesUrls: folderContent.map(({ url }) => url),
   };
 
   return { status: "success", data };
