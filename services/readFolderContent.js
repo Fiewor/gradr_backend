@@ -5,7 +5,7 @@ const { readdir } = require("node:fs/promises");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fileToGenerativePart = require("./fileToGenerativePart");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
-const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+const visionModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const getFilesInFolder = require("./getFilesInFolder");
 const downloadFromCloudStorage = require("./downloadFromCloudStorage");
 
