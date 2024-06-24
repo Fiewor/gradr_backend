@@ -1,6 +1,6 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
-const textModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 async function getOnlineAnswers(question) {
   const prompt = `You're a helpful search engine. 
