@@ -88,46 +88,47 @@ async function grade(
     return { status: "error", message: "No student answer to grade." };
   }
 
-  setTimeout(async () => {
-    const responses = await Promise.allSettled(
-      // go through all the student's answers
-      folderContent.map(async ({ text: studentAnswer }) => {
-        if (question && guide && onlineAnswers) {
-          // generate prompt
-          const gradingPrompt = formulateGradingPrompt(
-            question,
-            guide,
-            studentAnswer,
-            onlineAnswers,
-            marksAttainable,
-            dependencyLevel,
-            extraPrompt
-          );
+  // Rest period to avoid rate limiting
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-          // grade
-          const result = await textModel.generateContent(gradingPrompt);
-          const response = result.response;
-          console.log("output of grading: ", response.text());
-          return response.text();
-        } else {
-          return {
-            status: "error",
-            message: "One or more parameters are falsy",
-          };
-        }
-      })
-    );
+  const responses = await Promise.allSettled(
+    // go through all the student's answers
+    folderContent.map(async ({ text: studentAnswer }) => {
+      if (question && guide && onlineAnswers) {
+        // generate prompt
+        const gradingPrompt = formulateGradingPrompt(
+          question,
+          guide,
+          studentAnswer,
+          onlineAnswers,
+          marksAttainable,
+          dependencyLevel,
+          extraPrompt
+        );
 
-    const data = {
-      question,
-      markingGuide: guide,
-      gradingResponse: responses,
-      onlineAnswers: onlineAnswers,
-      answerFilesUrls: folderContent.map(({ url }) => url),
-    };
+        // grade
+        const result = await textModel.generateContent(gradingPrompt);
+        const response = result.response;
+        console.log("output of grading: ", response.text());
+        return response.text();
+      } else {
+        return {
+          status: "error",
+          message: "One or more parameters are falsy",
+        };
+      }
+    })
+  );
 
-    return { status: "success", data };
-  }, 1000);
+  const data = {
+    question,
+    markingGuide: guide,
+    gradingResponse: responses,
+    onlineAnswers: onlineAnswers,
+    answerFilesUrls: folderContent.map(({ url }) => url),
+  };
+
+  return { status: "success", data };
 }
 
 module.exports = {
