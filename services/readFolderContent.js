@@ -8,6 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
 const visionModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const getFilesInFolder = require("./getFilesInFolder");
 const downloadFromCloudStorage = require("./downloadFromCloudStorage");
+const { splitConvertRead } = require("./splitConvertRead");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 const folderName = process.env.FOLDER_NAME || "Students_Answer_sheets";
@@ -46,25 +47,19 @@ async function readFolderContent() {
     return { error: true, message: "No files" };
   }
 
-  const data = files
-    .filter((files) => files !== ".gitkeep")
-    .map((files) => {
+  const data = files.filter((files) => files !== ".gitkeep");
+
+  const res = await Promise.all(
+    data?.map(async (files) => {
+      console.log("files: ", files);
       const filePath = path.join(answerFolder, files);
-      return fileToGenerativePart(filePath, "image", "image/jpeg");
-    });
-
-  const prompt = "What is the text contained in this image?";
-
-  if (!data?.length) {
-    return { error: true, message: "No data for vision model to use." };
-  }
-  const readContent = await Promise.all(
-    data.map(async (singleData) => {
-      const result = await visionModel.generateContent([prompt, singleData]);
-      const response = result.response;
-      return response.text();
+      const text = await splitConvertRead(filePath);
+      console.log("read student answer: ", text);
+      return { filePath, text: text };
     })
   );
+
+  console.log("data{url, studentReadText}: ", res);
 
   // [
   //    {
@@ -73,19 +68,8 @@ async function readFolderContent() {
   //                   'A theory, on the other hand, is a well-substantiated explanation for a set of phenomena, like the theory of gravity. A hypothesis is like a guess, while a theory is a conclusion based on evidence. For example, the theory of evolution explains how species change over time, while a hypothesis might predict how a specific species will adapt to its environment.'
   //    },
   // ]
-  const res = [];
 
-  if (!filesInFolder.error) {
-    // assuming each file in filesInFolder get read by the ai, this should work:
-    for (let i = 0; i < filesInFolder.length; i++) {
-      const text = readContent[i];
-      const { url } = filesInFolder[i];
-      res.push({ url, text });
-    }
-  }
-
-  console.log("res: ", res);
-  return res;
+  return data;
 }
 
 module.exports = readFolderContent;

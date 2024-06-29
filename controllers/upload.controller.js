@@ -1,5 +1,6 @@
 const Uploader = require("../services/upload2Cloud");
 const { grade } = require("../services/grade");
+const path = require("path");
 
 const bucketName = process.env.BUCKET_NAME || "abdulsalam";
 
@@ -18,6 +19,13 @@ exports.uploadAndGrade = async (req, res) => {
     let urls = new Map();
 
     const files = Object.values(req.files); // Convert to array
+    const { originalname: questionName, filename: questionFileName } =
+      req.files["file1"][0];
+    const questionExtension = path.extname(questionName);
+
+    const { originalname: guideName, filename: guideFileName } =
+      req.files["file2"][0];
+    const guideExtension = path.extname(guideName);
 
     await Promise.all(
       files.map(async (element) => {
@@ -42,7 +50,9 @@ exports.uploadAndGrade = async (req, res) => {
         guideUrl,
         marks,
         dependencyLevel,
-        extraPrompt
+        extraPrompt,
+        questionExtension,
+        guideExtension
       );
 
       if (result?.status === "success") {
