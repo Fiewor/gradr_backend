@@ -8,15 +8,6 @@ const { GoogleAIFileManager } = require("@google/generative-ai/files");
 const { splitConvertRead } = require("./splitConvertRead");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLEAI_API_KEY);
-const textModel = genAI.getGenerativeModel({
-  model: "gemini-pro",
-  generationConfig: {
-    temperature: 0,
-    topP: 0.5,
-    topK: 1,
-  },
-});
-
 // const fileManager = new GoogleAIFileManager(process.env.GOOGLEAI_API_KEY);
 
 async function grade(
@@ -82,14 +73,41 @@ async function grade(
   const onlineAnswers = await getOnlineAnswers(question);
   console.log("onlineAnswers: ", onlineAnswers);
 
+  const systemInstruction = `You are a university lecturer. \
+      You receive a student's answers to question: ${question} and you score the student out of the maximum attainable marks: ${marksAttainable} \
+      You have the right answers to the question: ${onlineAnswers}. The prompt will instruct you on whether to use these right answers ot not. \
+      You have a marking guide: ${guide} that instructs you on how to allocate marks for the question. \
+      Feel free to reference the marking guide but do not include/repeat it in the response. \
+      You response must be a JSON object with the following schema: \
+      - score: score gotten by the student / total attainable marks \
+      - explanation: the justification for the score given to the student. Explain your reasoning step-by-step. \
+      - feedback: feedback on the student's overall performing stating areas for improvement (if any) \
+      If the response contains control characters such as '\n' (new line character), be sure to escape them with a backslash (). \
+      `;
+
+  const textModel = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    generationConfig: {
+      temperature: 0,
+      topP: 0.5,
+      topK: 1,
+      responseMimeType: "application/json",
+    },
+    systemInstruction: {
+      role: "system",
+      parts: [
+        {
+          text: systemInstruction,
+        },
+      ],
+    },
+  });
+
   const folderContent = await readFolderContent();
 
   if (folderContent?.error || !folderContent?.length) {
     return { status: "error", message: "No student answer to grade." };
   }
-
-  // Rest period to avoid rate limiting
-  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const responses = await Promise.allSettled(
     // go through all the student's answers
@@ -97,11 +115,7 @@ async function grade(
       if (question && guide && onlineAnswers) {
         // generate prompt
         const gradingPrompt = formulateGradingPrompt(
-          question,
-          guide,
           studentAnswer,
-          onlineAnswers,
-          marksAttainable,
           dependencyLevel,
           extraPrompt
         );
