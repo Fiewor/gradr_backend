@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, file.originalname);
   },
 });
 
@@ -15,7 +15,7 @@ const uploadMultiple = upload.fields([
   { name: "file1", maxCount: 1 },
   { name: "file2", maxCount: 1 },
   // { name: "file3", maxCount: 1 },
-])
+]);
 
 // Middleware to handle file upload
 exports.handleUpload = (req, res, next) => {
@@ -32,5 +32,5 @@ exports.handleUpload = (req, res, next) => {
 
     // No errors, proceed to the next middleware or route handler
     next();
-  })
+  });
 };
